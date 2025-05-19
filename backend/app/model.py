@@ -67,7 +67,7 @@ def train_fake_news_model(true_path="datasets/True.csv", fake_path="datasets/Fak
     print("Cleaning article texts...")
     df['text'] = df['text'].apply(clean_text)
     
-    # Remove empty texts after cleaning
+    # need to remove empty texts after cleaning
     df = df[df['text'].str.len() > 0]
     X = df['text']
     y = df['label'].map({'FAKE': 0, 'REAL': 1})

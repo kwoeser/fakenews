@@ -1,0 +1,55 @@
+{
+    "timestamp": "2025-05-19 13:25:35",
+    "model_type": "LogisticRegression",
+    "vectorizer": "TfidfVectorizer",
+    "dataset_stats": {
+        "total_samples": 44183,
+        "train_samples": 35346,
+        "test_samples": 8837,
+        "fake_samples": 23481,
+        "real_samples": 21417
+    },
+    "model_parameters": {
+        "max_iter": 1000,
+        "max_df": 0.7,
+        "min_df": 5,
+        "ngram_range": [
+            1,
+            2
+        ],
+        "stop_words": "english"
+    },
+    "performance_metrics": {
+        "accuracy": 0.9807627022745276,
+        "precision": 0.9807980820911386,
+        "recall": 0.9807627022745276,
+        "f1_score": 0.9807641127794265
+    },
+    "detailed_classification_report": {
+        "0": {
+            "precision": 0.9850446428571429,
+            "recall": 0.9771922054915855,
+            "f1-score": 0.9811027123165852,
+            "support": 4516.0
+        },
+        "1": {
+            "precision": 0.9763598806518247,
+            "recall": 0.9844943300161999,
+            "f1-score": 0.9804102327725283,
+            "support": 4321.0
+        },
+        "accuracy": 0.9807627022745276,
+        "macro avg": {
+            "precision": 0.9807022617544838,
+            "recall": 0.9808432677538927,
+            "f1-score": 0.9807564725445568,
+            "support": 8837.0
+        },
+        "weighted avg": {
+            "precision": 0.9807980820911386,
+            "recall": 0.9807627022745276,
+            "f1-score": 0.9807641127794265,
+            "support": 8837.0
+        }
+    }
+}
