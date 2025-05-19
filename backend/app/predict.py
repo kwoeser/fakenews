@@ -71,4 +71,37 @@ async def predict_article(article_text: str):
 
 async def predict_batch(articles: List[str]):
     return await predictor.predict_batch(articles)
+
+if __name__ == "__main__":
+    async def main():
+        # Example usage
+        test_articles = [
+            "This is a sample article to test the prediction function.",
+            "Another article to test batch prediction."
+        ]
+        
+        # Test single prediction
+        result = await predict_article(test_articles[0])
+        if 'error' in result:
+            print(f"Error: {result['error']}")
+        else:
+            print("\nSingle Prediction Result:")
+            print(f"Article is predicted to be: {result['prediction']}")
+            print(f"Confidence Score: {result['confidence_score']}%")
+            print(f"Fake Probability: {result['fake_probability']}%")
+            print(f"Real Probability: {result['real_probability']}%")
+        
+        # Test batch prediction
+        results = await predict_batch(test_articles)
+        print("\nBatch Prediction Results:")
+        for i, result in enumerate(results, 1):
+            print(f"\nArticle {i}:")
+            if 'error' in result:
+                print(f"Error: {result['error']}")
+            else:
+                print(f"Prediction: {result['prediction']}")
+                print(f"Confidence Score: {result['confidence_score']}%")
+
+    # Run the async main function
+    asyncio.run(main())
     
