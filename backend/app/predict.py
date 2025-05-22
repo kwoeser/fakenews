@@ -41,11 +41,12 @@ class ModelPredictor:
                 lambda: model.predict_proba([article_text])[0]
             )
             
-            fake_prob = probabilities[0] * 100 
-            real_prob = probabilities[1] * 100
+            fake_prob = min(probabilities[0] * 100, 100)
+            real_prob = min(probabilities[1] * 100, 100)
             
             is_fake = fake_prob > real_prob
             confidence_score = fake_prob if is_fake else real_prob
+            confidence_score = min(confidence_score, 100)
             
             return {
                 'prediction': 'FAKE' if is_fake else 'REAL',
@@ -74,9 +75,8 @@ async def predict_batch(articles: List[str]):
 
 if __name__ == "__main__":
     async def main():
-        # Example usage
         test_articles = [
-            "This is a sample article to test the prediction function.",
+            "https://apnews.com/article/vaccines-fda-kennedy-covid-shots-rfk-trump-bb4de15b6ff955d6cd0b406aaec3cdc5",
             "Another article to test batch prediction."
         ]
         
@@ -102,6 +102,5 @@ if __name__ == "__main__":
                 print(f"Prediction: {result['prediction']}")
                 print(f"Confidence Score: {result['confidence_score']}%")
 
-    # Run the async main function
     asyncio.run(main())
     
