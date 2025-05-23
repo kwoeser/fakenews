@@ -67,7 +67,7 @@ def get_fallback_article() -> Dict[str, str]:
     article = random.choice(FALLBACK_ARTICLES)
     return {
         'text': "(FALLBACK CONTENT) " + article['text'],
-        'title': "(ERROR ANALYZING ARTICLE)",
+        'title': "ERROR ANALYZING ARTICLE!!!",
         'date': article['date'],
         'source': article['source'],
         'original_url': article['url']
