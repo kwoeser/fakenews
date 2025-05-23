@@ -18,7 +18,9 @@ const ResultDisplay = ({ result }: ResultDisplayProps) => {
     political_bias, 
     bias_score,
     is_political,
-    bias_message
+    bias_message,
+    fake_probability,
+    real_probability
   } = result;
   
   // Ensure confidence is displayed correctly as percentage between 0-100
@@ -62,20 +64,42 @@ const ResultDisplay = ({ result }: ResultDisplayProps) => {
           </div>
         )}
         
-        <div className="result-header">
-          <span className="prediction">
-            {prediction.toLowerCase() === 'fake' ? '⚠️ Likely Misinformation' : '✓ Likely Factual'}
-          </span>
-          <span className="confidence">
-            Confidence: {confidencePercent}%
-          </span>
-        </div>
-        
-        {explanation && (
-          <div className="explanation">
-            <h3>Credibility Analysis</h3>
-            <p>{explanation}</p>
-          </div>
+        {/* render fake/real prediction and analysis */} 
+        {!isNonPolitical && (
+          <>
+            <div className="result-header">
+              <span className="prediction">
+                {prediction.toLowerCase() === 'fake' ? '⚠️ Likely Misinformation' : '✓ Likely Factual'}
+              </span>
+              <span className="confidence">
+                Confidence: {confidencePercent}%
+              </span>
+            </div>
+
+
+            {/* Display Fake and Real Probabilities */}
+            {(typeof fake_probability === 'number' || typeof real_probability === 'number') && (
+              <div className="probabilities" style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-around' }}>
+                {typeof real_probability === 'number' && (
+                  <span className="real-probability" style={{ color: 'var(--success-color)' }}>
+                    Real: {Math.round(real_probability)}%
+                  </span>
+                )}
+                {typeof fake_probability === 'number' && (
+                  <span className="fake-probability" style={{ color: 'var(--danger-color)' }}>
+                    Fake: {Math.round(fake_probability)}%
+                  </span>
+                )}
+              </div>
+            )}
+            
+            {explanation && (
+              <div className="explanation">
+                <h3>Credibility Analysis</h3>
+                <p>{explanation}</p>
+              </div>
+            )}
+          </>
         )}
         
         {political_bias && (
@@ -83,7 +107,7 @@ const ResultDisplay = ({ result }: ResultDisplayProps) => {
             <h3>Political Bias Analysis</h3>
             {isNonPolitical ? (
               <div className="non-political-content">
-                <p>{bias_message || "This content doesn't appear to be political in nature, so political bias analysis is not applicable."}</p>
+                <p>{"This content doesn't appear to be political in nature."}</p>
               </div>
             ) : (
               <div className="bias-container">
@@ -121,8 +145,8 @@ const ResultDisplay = ({ result }: ResultDisplayProps) => {
         )}
         
         <div className="disclaimer">
-          <p>This is an automated assessment based on text pattern analysis. 
-          Always verify information with trusted sources before drawing conclusions.</p>
+          <p>This is an automated assessment based on text pattern analysis. The model is trained on poltical articles.
+          Always verify information with trusted sources before drawing conclusions. The model is not perfect and makes mistakes. </p>
         </div>
       </div>
     </div>

@@ -4,18 +4,18 @@ import type { NewsCheckResult } from '../types';
 
 interface UrlFormProps {
   onResult: (result: NewsCheckResult) => void;
+  onLoading: (loading: boolean) => void;
 }
 
-const UrlForm = ({ onResult }: UrlFormProps) => {
+const UrlForm = ({ onResult, onLoading }: UrlFormProps) => {
   const [url, setUrl] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) return;
 
-    setLoading(true);
+    onLoading(true);
     setError(null);
     
     try {
@@ -25,14 +25,13 @@ const UrlForm = ({ onResult }: UrlFormProps) => {
       // Normalize confidence score to 0-1 range
       let confidenceScore: number;
       if (typeof result.confidence_score === 'number') {
-        // Ensure it's between 0 and 1
         confidenceScore = Math.min(Math.max(result.confidence_score / 100, 0), 1);
       } else if (typeof result.fake_probability === 'number' && typeof result.real_probability === 'number') {
         confidenceScore = result.is_fake ? 
           Math.min(result.fake_probability / 100, 1) : 
           Math.min(result.real_probability / 100, 1);
       } else {
-        confidenceScore = 0.75; // Default value
+        confidenceScore = 0.75; 
       }
       
       // Convert API response to the format expected by the UI
@@ -48,7 +47,9 @@ const UrlForm = ({ onResult }: UrlFormProps) => {
         bias_score: result.bias_score,
         is_political: result.is_political,
         bias_message: result.bias_message,
-        analyzed_url: result.analyzed_url
+        analyzed_url: result.analyzed_url,
+        fake_probability: result.fake_probability,
+        real_probability: result.real_probability
       };
       
       console.log('Formatted Result:', formattedResult);
@@ -57,7 +58,7 @@ const UrlForm = ({ onResult }: UrlFormProps) => {
       setError(err.response?.data?.detail || 'Failed to analyze URL. Please try again.');
       console.error(err);
     } finally {
-      setLoading(false);
+      onLoading(false);
     }
   };
 
@@ -70,12 +71,18 @@ const UrlForm = ({ onResult }: UrlFormProps) => {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="Enter news article URL..."
-          disabled={loading}
           required
         />
         {error && <div className="error">{error}</div>}
-        <button type="submit" disabled={loading || !url.trim()}>
-          {loading ? 'Analyzing...' : 'Analyze URL'}
+        <button type="submit">
+          {false ? (
+            <>
+              <div className="spinner" style={{ display: 'inline-block', marginRight: '8px', verticalAlign: 'middle' }}></div>
+              Analyzing...
+            </>
+          ) : (
+            'Analyze URL'
+          )}
         </button>
       </form>
     </div>
