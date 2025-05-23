@@ -7,7 +7,7 @@ from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import classification_report, accuracy_score, precision_score, recall_score, f1_score
 
 def clean_text(text: str) -> str:
@@ -17,7 +17,7 @@ def clean_text(text: str) -> str:
         
     text = text.lower()
     
-    # Remove Reuters attribution and similar patterns, I saw someone on kaggle talk about how this improved their model
+    # Remove Reuters attribution and similar patterns, I saw someone on kaggle talk about how this improved their model, TODO!
     patterns_to_remove = [
         r'\(reuters\)',
         r'reuters\s*[-–—]\s*',
@@ -51,7 +51,6 @@ def clean_text(text: str) -> str:
     return text.strip()
 
 def train_fake_news_model(true_path="datasets/True.csv", fake_path="datasets/Fake.csv"):
-    # Create models directory if it doesn't exist
     models_dir = "models"
     os.makedirs(models_dir, exist_ok=True)
     true_df = pd.read_csv(true_path)
@@ -66,13 +65,11 @@ def train_fake_news_model(true_path="datasets/True.csv", fake_path="datasets/Fak
     
     print("Cleaning article texts...")
     df['text'] = df['text'].apply(clean_text)
-    
-    # need to remove empty texts after cleaning
+
     df = df[df['text'].str.len() > 0]
     X = df['text']
     y = df['label'].map({'FAKE': 0, 'REAL': 1})
 
-    # Split data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Pipeline: TF-IDF + Logistic Regression
@@ -80,19 +77,19 @@ def train_fake_news_model(true_path="datasets/True.csv", fake_path="datasets/Fak
         ('tfidf', TfidfVectorizer(
             stop_words='english',
             max_df=0.7,
-            min_df=5, 
-            ngram_range=(1, 2)  
+            min_df=5,
+            ngram_range=(1, 2)
         )),
         ('clf', LogisticRegression(max_iter=1000)),
     ])
 
-    print("Training model...")
+    print("Training model (reverted to pre-GridSearchCV settings)...")
     pipeline.fit(X_train, y_train)
     y_pred = pipeline.predict(X_test)
     
     metrics = {
         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'model_type': 'LogisticRegression',
+        'model_type': 'LogisticRegression', # Reverted model type
         'vectorizer': 'TfidfVectorizer',
         'dataset_stats': {
             'total_samples': len(df),
@@ -101,7 +98,7 @@ def train_fake_news_model(true_path="datasets/True.csv", fake_path="datasets/Fak
             'fake_samples': len(fake_df),
             'real_samples': len(true_df)
         },
-        'model_parameters': {
+        'model_parameters': { # Reverted to old model_parameters structure
             'max_iter': 1000,
             'max_df': 0.7,
             'min_df': 5,
@@ -117,15 +114,13 @@ def train_fake_news_model(true_path="datasets/True.csv", fake_path="datasets/Fak
         'detailed_classification_report': classification_report(y_test, y_pred, output_dict=True)
     }
 
-    # Save metrics to JSON file in models directory
     metrics_file = os.path.join(models_dir, 'model_metrics.json')
     with open(metrics_file, 'w') as f:
         json.dump(metrics, f, indent=4)
     print(f"Training metrics saved to {metrics_file}")
 
-    # Save model to models directory
     model_file = os.path.join(models_dir, 'fake_news_model.pkl')
-    joblib.dump(pipeline, model_file)
+    joblib.dump(pipeline, model_file) # Save the direct pipeline
     print(f"Model trained and saved as {model_file}")
 
 if __name__ == "__main__":

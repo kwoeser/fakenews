@@ -11,13 +11,13 @@ class ModelPredictor:
     def __init__(self, model_path = 'models/fake_news_model.pkl'):
         self.model_path = model_path
         self.model = None
-        self._load_lock = asyncio.Lock()
+        self.load_lock = asyncio.Lock()
 
     async def load_model(self):
-        # Asynchronously load the model if it's not already loaded
+        # Asynchronously load the model if it's not already loaded and check twice to avoid race condition
         if self.model is None:
-            async with self._load_lock:
-                if self.model is None:  # check pattern again to avoid race condition
+            async with self.load_lock:
+                if self.model is None: 
                     try:
                         # Run model loading in thread pool since it's CPU-bound
                         self.model = await asyncio.get_event_loop().run_in_executor(
@@ -35,7 +35,7 @@ class ModelPredictor:
         try:
             model = await self.load_model()
             
-            # Run prediction in thread pool since it's CPU-bound
+            # Run prediction in thread pool 
             probabilities = await asyncio.get_event_loop().run_in_executor(
                 thread_pool,
                 lambda: model.predict_proba([article_text])[0]

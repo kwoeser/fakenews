@@ -2,17 +2,19 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
-from typing import Dict, Union, Optional
 from .predict import predict_article
 from .scraper import extract_article_text
+from .bias_detector import detect_political_bias
+from typing import Optional, Dict, Union
+import re
 
+# I SHOULD'VE JUST USED A PRETRAINED MODEL 
 app = FastAPI(
     title="Fake News Detection API",
     description="API for detecting fake news articles",
     version="1.0.0"
 )
 
-# Add CORS middleware for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # replace with your frontend domain in production TODO!!!!
@@ -20,6 +22,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 class ArticleRequest(BaseModel):
     text: Optional[str] = Field(None, min_length=50, description="The article text to analyze")
@@ -41,6 +45,14 @@ class PredictionResponse(BaseModel):
 
 class AnalyzeUrlResponse(PredictionResponse):
     analyzed_url: str
+    title: Optional[str] = None
+    source: Optional[str] = None
+    date: Optional[str] = None
+    credibility_analysis: Optional[str] = None
+    political_bias: Optional[str] = None
+    bias_score: Optional[float] = None
+    is_political: Optional[bool] = None
+    bias_message: Optional[str] = None
 
 @app.get("/")
 async def root():
@@ -48,7 +60,8 @@ async def root():
         "message": "Welcome to the Fake News Detection API",
         "endpoints": {
             "/predict": "POST - Analyze article text for fake news",
-            "/docs": "GET - API documentation"
+            "/analyze-url": "POST - Analyze URL for fake news",
+            "/docs": "GET - API documentation",
         }
     }
 
@@ -67,6 +80,7 @@ async def predict(request: ArticleRequest):
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/analyze-url", response_model=AnalyzeUrlResponse)
 async def analyze_url(request: ArticleRequest):
@@ -88,9 +102,39 @@ async def analyze_url(request: ArticleRequest):
     
     if 'error' in prediction_result:
         raise HTTPException(status_code=500, detail=f"Error making prediction: {prediction_result['error']}")
+    
+    # Add credibility analysis based on the prediction
+    credibility_analysis = ""
+    if prediction_result['is_fake']:
+        fake_probability = prediction_result['fake_probability']
+        if fake_probability > 90:
+            credibility_analysis = "This article contains multiple red flags indicating it is highly likely to be fake news."
+        elif fake_probability > 70:
+            credibility_analysis = "This article shows significant patterns common in fake news sources."
+        else:
+            credibility_analysis = "This article has some characteristics of misinformation, suggesting caution is warranted."
+    else:
+        real_probability = prediction_result['real_probability']
+        if real_probability > 90:
+            credibility_analysis = "This article demonstrates strong credibility patterns typical of reliable news sources."
+        elif real_probability > 70:
+            credibility_analysis = "This article appears to be generally credible, with patterns consistent with legitimate reporting."
+        else:
+            credibility_analysis = "While this article appears more credible than not, some verification with additional sources is recommended."
+    
+    # Detect political bias
+    bias_data = detect_political_bias(scraped_data['text'])
             
     return AnalyzeUrlResponse(
         analyzed_url=request.url,
+        title=scraped_data.get('title', ''),
+        source=scraped_data.get('source', ''),
+        date=scraped_data.get('date', ''),
+        credibility_analysis=credibility_analysis,
+        political_bias=bias_data['bias'],
+        bias_score=bias_data.get('bias_score', 0),
+        is_political=bias_data.get('is_political', False),
+        bias_message=bias_data.get('message', ''),
         **prediction_result
     )
 

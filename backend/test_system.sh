@@ -83,7 +83,8 @@ fi
 # Test the analyze-url endpoint
 echo "Testing analyze-url endpoint..."
 # Using a more reliable URL for scraping tests
-TEST_ARTICLE_URL="https://en.wikipedia.org/wiki/Artificial_intelligence"
+TEST_ARTICLE_URL="https://apnews.com/article/vaccines-fda-kennedy-covid-shots-rfk-trump-bb4de15b6ff955d6cd0b406aaec3cdc5"
+
 curl -s -X POST "http://localhost:8000/analyze-url" \
      -H "Content-Type: application/json" \
      -d "{\"url\": \"$TEST_ARTICLE_URL\"}" \
