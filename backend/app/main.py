@@ -120,7 +120,7 @@ async def analyze_url(request: ArticleRequest):
         elif real_probability > 70:
             credibility_analysis = "This article appears to be generally credible, with patterns consistent with legitimate reporting."
         else:
-            credibility_analysis = "While this article appears more credible than not, some verification with additional sources is recommended."
+            credibility_analysis = "The article analysis is inconclusive, possibly due to parsing difficulties or unusual text structure. Please verify with additional sources."
     
     # Detect political bias
     bias_data = detect_political_bias(scraped_data['text'])

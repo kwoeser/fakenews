@@ -1,5 +1,5 @@
 {
-    "timestamp": "2025-05-22 17:19:30",
+    "timestamp": "2025-05-22 21:46:00",
     "model_type": "LogisticRegression",
     "vectorizer": "TfidfVectorizer",
     "dataset_stats": {

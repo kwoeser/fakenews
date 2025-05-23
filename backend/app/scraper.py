@@ -39,7 +39,7 @@ FALLBACK_ARTICLES = [
         'url': 'https://en.wikipedia.org/wiki/Web_scraping',
         'title': 'Web scraping - Wikipedia',
         'text': "Web scraping, web harvesting, or web data extraction is data scraping used for extracting data from websites. Web scraping software may directly access the World Wide Web using the Hypertext Transfer Protocol or a web browser. While web scraping can be done manually by a software user, the term typically refers to automated processes implemented using a bot or web crawler. It is a form of copying in which specific data is gathered and copied from the web, typically into a central local database or spreadsheet, for later retrieval or analysis.",
-        'date': '2023-10-26', # Using a fixed date as Wikipedia pages are continuously updated
+        'date': '2023-10-26', 
         'source': 'en.wikipedia.org'
     }
 ]
@@ -63,12 +63,11 @@ def get_domain(url: str) -> str:
     return domain
 
 def get_fallback_article() -> Dict[str, str]:
-    """Return the working fallback article"""
-    # Since FALLBACK_ARTICLES now contains only one article, random.choice will always pick it.
+    # Return the working fallback article, since FALLBACK_ARTICLES now contains only one article, random.choice will always pick it, add more
     article = random.choice(FALLBACK_ARTICLES)
     return {
         'text': "(FALLBACK CONTENT) " + article['text'],
-        'title': "(FALLBACK) " + article['title'],
+        'title': "(ERROR ANALYZING ARTICLE)",
         'date': article['date'],
         'source': article['source'],
         'original_url': article['url']
