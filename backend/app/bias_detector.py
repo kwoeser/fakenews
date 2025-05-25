@@ -7,6 +7,7 @@ LEFT_LEANING_TERMS = [
     'diversity', 'reproductive rights', 'green new deal', 'regulation',
     'welfare', 'labor union', 'immigration rights', 'black lives matter',
     'systemic racism', 'privilege', 'defund police', 'gender equality', 'pro-choice',
+    'CNN'
 ]
 
 RIGHT_LEANING_TERMS = [
@@ -15,7 +16,7 @@ RIGHT_LEANING_TERMS = [
     'small government', 'deregulation', 'tax cuts', 'religious freedom',
     'national security', 'border security', 'law and order', 'constitutional',
     'fiscal responsibility', 'blue lives matter', 'pro-gun', 'pro-police', 'pro-life',
-    'pro-trump', 'MAGA', 'Make America Great Again'
+    'pro-trump', 'MAGA', 'Make America Great Again', 'Fox News'
 ]
 
 # Terms that indicate content is political in nature

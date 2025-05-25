@@ -11,6 +11,8 @@ export interface NewsCheckResult {
   is_political?: boolean;
   bias_message?: string;
   analyzed_url?: string;
+  fake_probability?: number;
+  real_probability?: number;
 }
 
 export interface NewsCheckRequest {
