@@ -23,7 +23,7 @@ This project is designed to help users detect potential fake news and it's polti
 *   Model performance metrics can be found in `backend/models/model_metrics.json`.
 
 <p align="center">
-    <img src="https://github.com/user-attachments/assets/354f12c0-b8a4-4174-a3ec-e33164f5eb2d" alt="fakenews" width="45%"/>
+    <img src="https://github.com/user-attachments/assets/30d7bfea-303f-4fdf-a0a6-d99c8e526c02" alt="fakenews" width="45%"/>
     <img src="https://github.com/user-attachments/assets/9fca83f5-1fe8-4246-8734-909dd2a2a461" alt="image" width="45%"/>
 </p>
 
