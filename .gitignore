@@ -5,7 +5,7 @@ datasets/
 *.pkl
 *.h5
 *.hdf5
-*.json
+# *.json
 *.npy
 *.npz
 
